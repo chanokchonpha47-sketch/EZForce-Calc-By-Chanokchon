@@ -1,0 +1,86 @@
+import math
+from tkinter import *
+
+def calculate_force(F, angle, direction, direction_map):
+    angle_rad = math.radians(angle)
+    Fx = F * math.cos(angle_rad)
+    Fy = F * math.sin(angle_rad)
+    sign_x, sign_y = direction_map[direction]
+    Fx *= sign_x
+    Fy *= sign_y
+    return Fx, Fy
+
+def draw_force(canvas, origin_x, origin_y, Fx, Fy, angle):
+    canvas.delete("force")
+    scale = 2
+    max_length = 120
+    length = math.sqrt(Fx**2 + Fy**2)
+    if length != 0:
+        factor = min(max_length / length, scale)
+    else:
+        factor = scale
+    end_x = origin_x + Fx * factor
+    end_y = origin_y - Fy * factor
+    # 🔵 วาดลูกศรแรง
+    canvas.create_line(
+        origin_x,
+        origin_y,
+        end_x,
+        end_y,
+        arrow=LAST,
+        width=3,
+        fill="#22c55e",
+        tags="force"
+    )
+
+    force_value = math.sqrt(Fx**2 + Fy**2)
+
+    offset_x = 10 if Fx >= 0 else -10
+    offset_y = -10 if Fy >= 0 else 10
+
+    canvas.create_text(end_x + offset_x,
+                       end_y + offset_y,
+                       text="F= "+f"{force_value:.1f} N",
+                       fill="white",
+                       font=("Prompt", 11, "bold"),
+                       tags="force"
+                       )
+
+    canvas.create_line(origin_x,
+                       origin_y,
+                       end_x,
+                       origin_y,
+                       fill="#60a5fa",
+                       width=3,
+                       arrow=LAST,
+                       tags="force"
+                       )
+
+    canvas.create_line(origin_x,
+                       origin_y,
+                       origin_x,
+                       end_y,
+                       fill="#f59e0b",
+                       width=3,
+                       arrow=LAST,
+                       tags="force"
+                       )
+
+    canvas.create_text(end_x,
+                       origin_y - 12,
+                       text="Fx= "+f"{Fx:.1f} N",
+                       fill="#60a5fa",
+                       font=("Prompt", 10, "bold"),
+                       tags="force"
+                       )
+
+    canvas.create_text(origin_x + 25,
+                       end_y,
+                       text="Fy= "+f"{Fy:.1f} N",
+                       fill="#f59e0b",
+                       font=("Prompt", 10, "bold"),
+                       tags="force"
+                       )
+
+def calculate_R(Fx, Fy):
+    return math.sqrt(Fx**2 + Fy**2)
